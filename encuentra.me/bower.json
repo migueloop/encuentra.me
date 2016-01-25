@@ -1,0 +1,33 @@
+{
+  "name": "encuentra-me",
+  "private": true,
+  "dependencies": {
+    "bootstrap": "~3.3.5",
+    "bootstrap-material-design": "~0.3.0",
+    "modernizr": "~2.8.3",
+    "geocomplete": "ubilabs-geocomplete#~1.6.5",
+    "firebase": "~2.4.0",
+    "bootstrap-validator": "~0.9.0"
+  },
+  "overrides": {
+    "bootstrap": {
+      "main": [
+        "dist/js/bootstrap.js",
+        "dist/css/bootstrap.css"
+      ]
+    },
+    "bootstrap-material-design": {
+      "main": [
+        "dist/css/material.css",
+        "dist/css/ripples.css",
+        "dist/css/roboto.css",
+        "dist/js/material.js",
+        "dist/js/ripples.js"
+      ]
+    }
+  },
+  "devDependencies": {
+    "chai": "~3.4.2",
+    "mocha": "~2.3.4"
+  }
+}
