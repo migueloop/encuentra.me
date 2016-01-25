@@ -33,62 +33,42 @@ $("#share-localization").click(function getLocation(){
 
 $('#locationForm').validator().on('submit', function (e) {
 	$("#sendBtn").text("Enviando...");
-  if (e.isDefaultPrevented()) {
+	if (e.isDefaultPrevented()) {
     // handle the invalid form...
-  } else {
+} else {
   	// everything goes good
-    var myFirebaseRef = new Firebase("https://encuentra-me.firebaseio.com/positions");
+  	var myFirebaseRef = new Firebase("https://encuentra-me.firebaseio.com/adminp");
 
-	myFirebaseRef.push({
-		latitude: $("#inputLat").val(),
-		longitude: $("#inputLng").val(),
-		description: $("#inputDescription").val(),
-		date: Firebase.ServerValue.TIMESTAMP
-	});
-	e.preventDefault();
-	$("#locationForm :input").attr("disabled", true);
-	$("#share-localization").attr("disabled", true);
-	$("#sendBtn").remove();
-	$("#thankYou").show();
+  	myFirebaseRef.push({
+  		latitude: $("#inputLat").val(),
+  		longitude: $("#inputLng").val(),
+  		description: $("#inputDescription").val(),
+  		date: Firebase.ServerValue.TIMESTAMP
+  	});
+  	e.preventDefault();
+  	$("#locationForm :input").attr("disabled", true);
+  	$("#share-localization").attr("disabled", true);
+  	$("#sendBtn").remove();
+  	$("#thankYou").show();
   }
 })
 
-/**
- $('#locationForm').formValidation({
-        framework: 'bootstrap',
-        excluded: ':disabled',
-        icon: {
-            valid: 'glyphicon glyphicon-ok',
-            invalid: 'glyphicon glyphicon-remove',
-            validating: 'glyphicon glyphicon-refresh'
-        },
-        fields: {
-            inputLocalization: {
-                validators: {
-                    notEmpty: {
-                        message: 'Introduzca una localización'
-                    },
-                    stringLength: {
-                        min: 1,
-                        max: 150,
-                        message: 'La localización no puede ser mayor de 150 caracteres.'
-                    }
-                }
-            },
-            inputDescription: {
-                validators: {
-                    notEmpty: {
-                        message: 'Introduzca una descripción'
-                    },
-                    stringLength: {
-                        min: 5,
-                        max: 500,
-                        message: 'La descripción debe contenemos más de 5 palabras y menos de 500'
-                    }
-                }
-            }
-        }
-    });
-*/
 
+$('#loginForm').submit(function login(event){
+	var user = $("#inputUser").val();
+	var pass = $("#inputPass").val();
 
+	var ref = new Firebase("https://encuentra-me.firebaseio.com/");
+	ref.authWithPassword({
+		email    : user,
+		password : pass
+	}, function(error, authData) {
+		if (error) {
+			$("#loginError").show();
+		} else {
+			$('#loginForm').hide();
+
+		}
+	});
+	event.preventDefault();
+});
