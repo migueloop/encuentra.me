@@ -35,7 +35,7 @@ $('#locationForm').validator().on('submit', function (e) {
 		// handle the invalid form...
 	} else {
 			// everything goes good
-			var myFirebaseRef = new Firebase("https://encuentra-me.firebaseio.com/reg");
+			var myFirebaseRef = new Firebase("https://encuentra-me.firebaseio.com/locs");
 
 			myFirebaseRef.push({
 				latitude: $("#inputLat").val(),
@@ -52,37 +52,87 @@ $('#locationForm').validator().on('submit', function (e) {
 });
 
 $('#loginForm').submit(function login(event) {
+	event.preventDefault(); 
 	var user = $("#inputUser").val();
 	var pass = $("#inputPass").val();
-
-	var ref = new Firebase("https://encuentra-me.firebaseio.com/");
+	var ref = new Firebase("https://encuentra-me.firebaseio.com");
 	ref.authWithPassword({
 		email: user,
 		password: pass
 	}, function (error, authData) {
-		if (error) {
-			$("#loginError").show();
-		} else {
+		//if (error) {
+		//	$("#loginError").show();
+		//} else {
+			$("#loginError").hide();
 			$('#loginForm').hide();
 			$('#adminPanel').show();
-			$('#inform').html()
+			
+			var locs = new Firebase("https://encuentra-me.firebaseio.com/locs");
+			locs.on("value", function(registry) {
+				/* create localizations table*/
+				var tableRows;
+				var locations = [];
+				registry.forEach(function(data) {
+					tableRows +='<tr id="'+data.key()+'"><td>'+ data.val().date+'</td><td>'+data.val().description+'</td></tr>'; 
+					var loc = ['', data.val().latitude , data.val().longitude, 1] ;
+					locations.push(loc);
+  				});
+  				$('#tableBody').append(tableRows);	
 
-			/* create token */
-			var tokenGenerator = new FirebaseTokenGenerator("UEkT2QZhNed3IaHONfy7jw70bZjnUAwyijOaCWXN");
-			var token = tokenGenerator.createToken({ uid: "uniqueId1", some: "arbitrary", data: "here" }); 	
+  				/* create map with localizations */
+  				generateMap(locations);
 
-
-			var ref = new Firebase("https://encuentra-me.firebaseio.com//reg");
-			ref.on("value", function(registry) {
-				console.log(registry.val());
-			}, function (errorObject) {
+			}, function (errorObject) {	
 				console.log("The read failed: " + errorObject.code);
 			});
+		//	}
 
-		}
+
+			/* create token */
+			/*var tokenGenerator = new FirebaseTokenGenerator("UEkT2QZhNed3IaHONfy7jw70bZjnUAwyijOaCWXN");
+			var token = tokenGenerator.createToken({ uid: "uniqueId1", some: "arbitrary", data: "here" }); 	*/
+
+
 	});
 			
 
 	event.preventDefault();
 });
+
 //# sourceMappingURL=main.js.map
+
+
+/**
+ - Utils -
+*/
+function convertDate(inputFormat) {
+  function pad(s) { return (s < 10) ? '0' + s : s; }
+  var d = new Date(inputFormat);
+  return [pad(d.getDate()), pad(d.getMonth()+1), d.getFullYear()].join('/');
+}
+
+function generateMap(locations){	
+	 var map = new google.maps.Map(document.getElementById('map'), {
+      zoom: 15,
+      center: new google.maps.LatLng(37.388736, -5.971162),
+      mapTypeId: google.maps.MapTypeId.ROADMAP
+    });
+
+    var infowindow = new google.maps.InfoWindow();
+
+    var marker, i;
+
+    for (i = 0; i < locations.length; i++) {  
+      marker = new google.maps.Marker({
+        position: new google.maps.LatLng(locations[i][1], locations[i][2]),
+        map: map
+      });
+
+      google.maps.event.addListener(marker, 'click', (function(marker, i) {
+        return function() {
+          infowindow.setContent(locations[i][0]);
+          infowindow.open(map, marker);
+        }
+      })(marker, i));
+    }
+} 
