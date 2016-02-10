@@ -92,7 +92,7 @@ function loadAdminPanel() {
 		var locations = [];
 		registry.forEach(function (data) {
 			tableRows += '<tr id="' + data.key() + '"><td>' + convertDate(data.val().date) + '</td><td>' + data.val().description + '</td></tr>';
-			var loc = ['', data.val().latitude, data.val().longitude, 1];
+			var loc = ['[' + convertDate(data.val().date) + '] ' + data.val().description, data.val().latitude, data.val().longitude, 1];
 			locations.push(loc);
 		});
 		if (locations.length === 0) {
@@ -133,7 +133,8 @@ function generateMap(locations) {
 	for (i = 0; i < locations.length; i++) {
 		marker = new google.maps.Marker({
 			position: new google.maps.LatLng(locations[i][1], locations[i][2]),
-			map: map
+			map: map,
+			title: locations[i][0]
 		});
 
 		google.maps.event.addListener(marker, 'click', (function (marker, i) {
